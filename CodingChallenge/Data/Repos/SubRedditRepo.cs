@@ -32,7 +32,7 @@ public class SubRedditRepo : ISubRedditRepo
     private static SubRedditRepo _instance = null!;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SubRedditRepo"/> class.
+    /// Initializes a new instance of the <see cref="SubRedditRepo" /> class.
     /// </summary>
     /// <param name="subName">Name of the sub.</param>
     /// <exception cref="System.ArgumentNullException">subName</exception>
@@ -57,6 +57,7 @@ public class SubRedditRepo : ISubRedditRepo
         {
             throw new ArgumentNullException(nameof(name));
         }
+
         return _instance ??= new SubRedditRepo(name);
     }
 

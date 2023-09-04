@@ -1,5 +1,4 @@
-﻿using CodingChallenge;
-using CodingChallenge.Data.Model.DB_DTOs;
+﻿using CodingChallenge.Data.Model.DB_DTOs;
 using CodingChallenge.Data.Repos;
 using FluentAssertions;
 
@@ -7,8 +6,6 @@ namespace CodingChallengeTests;
 
 public class SubReddiRepoTests
 {
-    private ICodingChallengeOptions options = new CodingChallengeOptions();
-
     [Test]
     public void NameIsRequiredToCreateTest()
     {

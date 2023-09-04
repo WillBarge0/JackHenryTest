@@ -1,26 +1,56 @@
-﻿using System.Text;
+﻿// ***********************************************************************
+// Assembly         : CodingChallenge
+// Author           : Bill Barge
+// Created          : 09-03-2023
+//
+// Last Modified By : Bill Barge
+// Last Modified On : 09-03-2023
+// ***********************************************************************
+// <copyright file="DriverService.cs" company="CodingChallenge">
+//     Copyright (c) N/A. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using System.Text;
 using CodingChallenge.Data.Repos;
 using CodingChallenge.Reddit;
 using CodingChallenge.Services;
 using Reddit;
 using Reddit.Controllers;
-using CodingChallenge.Data.Model.DB_DTOs;
 using DTO = CodingChallenge.Data.Model.DB_DTOs;
-using Post = Reddit.Controllers.Post;
 using Microsoft.Extensions.Hosting;
 
 namespace CodingChallenge;
 
+/// <summary>
+/// Class DriverService.
+/// Implements the <see cref="IHostedService" />
+/// </summary>
+/// <seealso cref="IHostedService" />
 public class DriverService : IHostedService
 {
+    /// <summary>
+    /// The output service
+    /// </summary>
     private readonly IOutputService _outputService;
+    /// <summary>
+    /// The reddit wrapper
+    /// </summary>
     private readonly IRedditWrapper _redditWrapper;
+    /// <summary>
+    /// The options
+    /// </summary>
     private readonly ICodingChallengeOptions _options;
     private readonly ISubRedditRepo _subRedditRepo;
-    private bool _process;
-    
 
-    public DriverService(IHostApplicationLifetime applicationLifetime, IOutputService outputService,IRedditWrapper redditWrapper,ICodingChallengeOptions options,ISubRedditRepo subRedditRepo)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DriverService"/> class.
+    /// </summary>
+    /// <param name="outputService">The output service.</param>
+    /// <param name="redditWrapper">The reddit wrapper.</param>
+    /// <param name="options">The options.</param>
+    /// <param name="subRedditRepo">The sub reddit repo.</param>
+    public DriverService(IOutputService outputService,IRedditWrapper redditWrapper,ICodingChallengeOptions options,ISubRedditRepo subRedditRepo)
     {
         _outputService = outputService ?? throw new ArgumentNullException(nameof(outputService));
         _redditWrapper = redditWrapper ?? throw new ArgumentNullException( nameof(redditWrapper));
@@ -28,8 +58,11 @@ public class DriverService : IHostedService
         _subRedditRepo = subRedditRepo ?? throw new ArgumentNullException(nameof(subRedditRepo));
     }
 
-
-
+    /// <summary>
+    /// Start as an asynchronous operation.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+    /// <returns>A Task&lt;System.Threading.Tasks.Task&gt; representing the asynchronous operation.</returns>
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         _outputService.SendOut($"Starting to monitor posts on the sub-reddit {_options.SubRedditToWatch}");
@@ -51,6 +84,7 @@ public class DriverService : IHostedService
             }
             catch
             {
+                // ignored
             } //suppress the throw when the service is stopped with a ctrl-c
 
             DTO.Post[] posts = _subRedditRepo.GetPostsWithMostUpVotes(_options.ResultSetSize).ToArray<DTO.Post>();
@@ -89,11 +123,21 @@ public class DriverService : IHostedService
 
     }
 
+    /// <summary>
+    /// Stops the asynchronous.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+    /// <returns>System.Threading.Tasks.Task.</returns>
     public Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
-    
+
+    /// <summary>
+    /// Postses the new updated.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The <see cref="Reddit.Controllers.EventArgs.PostsUpdateEventArgs"/> instance containing the event data.</param>
     private void Posts_NewUpdated(object? sender, global::Reddit.Controllers.EventArgs.PostsUpdateEventArgs e)
     {
         if (e.Added is { Count: > 0 })

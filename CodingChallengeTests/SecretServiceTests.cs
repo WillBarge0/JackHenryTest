@@ -7,7 +7,7 @@ namespace CodingChallengeTests;
 [TestFixture]
 public class SecretServiceTests
 {
-    private ICodingChallengeOptions options = new CodingChallengeOptions();
+    private readonly ICodingChallengeOptions _options = new CodingChallengeOptions();
 
     [Test]
     public void OptionsAreRequiredToCreateTest()
@@ -18,14 +18,14 @@ public class SecretServiceTests
     [Test]
     public void CanBuildInstanceTest()
     {
-        SecretService sut = new SecretService(options);
+        SecretService sut = new SecretService(_options);
         sut.Should().NotBeNull("We should be able to create and instance");
     }
 
     [Test]
     public void CanGetRefreshToken()
     {
-        ISecretService sut = new SecretService(options);
+        ISecretService sut = new SecretService(_options);
 
         Task.Run(async () =>
         {
@@ -38,7 +38,7 @@ public class SecretServiceTests
     [Test]
     public void CanGetApplicationId()
     {
-        ISecretService sut = new SecretService(options);
+        ISecretService sut = new SecretService(_options);
         Task.Run(async () =>
         {
             string result = await sut.GetAppIdAsync();
